@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: app-demo
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydatabase
+    username: myuser
+    password: secret
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+server:
+  port: 8082
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
