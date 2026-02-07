@@ -4,16 +4,13 @@ import com.isga.app.domain.Course;
 import com.isga.app.domain.Student;
 import com.isga.app.repository.CourseRepository;
 import com.isga.app.repository.StudentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 @Service
 public class CourseService {
     private final CourseRepository courseRepository;
 
-    @Autowired
     private final StudentRepository studentRepository;
 
     public CourseService(CourseRepository courseRepository, StudentRepository studentRepository) {

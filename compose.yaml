@@ -1,6 +1,7 @@
 services:
   postgres:
     image: 'postgres:16'
+    container_name: app-demo-postgres
     environment:
       - 'POSTGRES_DB=mydatabase'
       - 'POSTGRES_PASSWORD=secret'
@@ -10,13 +11,17 @@ services:
     volumes:
       - 'pgdata:/var/lib/postgresql/data'
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U myuser']
+      test: ['CMD-SHELL', 'pg_isready -U myuser -d mydatabase']
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
+    restart: unless-stopped
 
   app:
     build: .
+    container_name: app-demo-app
     depends_on:
       postgres:
         condition: service_healthy
@@ -24,8 +29,16 @@ services:
       - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase'
       - 'SPRING_DATASOURCE_USERNAME=myuser'
       - 'SPRING_DATASOURCE_PASSWORD=secret'
+      - 'SPRING_JPA_HIBERNATE_DDL_AUTO=update'
     ports:
       - '8082:8082'
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   pgdata:

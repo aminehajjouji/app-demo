@@ -13,10 +13,19 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false
+  docker:
+    compose:
+      enabled: false
+
 server:
   port: 8082
+
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
