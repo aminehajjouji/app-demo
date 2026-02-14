@@ -1,0 +1,39 @@
+FROM jenkins/jenkins:lts-jdk17
+
+USER root
+
+# Installer les outils système nécessaires
+RUN apt-get update && apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installer Docker CLI
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+RUN apt-get update && apt-get install -y docker-ce-cli && rm -rf /var/lib/apt/lists/*
+
+# Installer Maven 3.9.6
+ENV MAVEN_VERSION=3.9.6
+RUN curl -fsSL https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz | tar xzf - -C /opt \
+    && ln -s /opt/apache-maven-${MAVEN_VERSION} /opt/maven
+
+# Configurer les variables d'environnement (Java 17 déjà inclus dans l'image)
+ENV MAVEN_HOME=/opt/maven
+ENV PATH=${MAVEN_HOME}/bin:${PATH}
+
+# Revenir à l'utilisateur jenkins
+USER jenkins
+
+# Installer les plugins Jenkins essentiels
+RUN jenkins-plugin-cli --plugins \
+    git \
+    workflow-aggregator \
+    github \
+    github-branch-source \
+    pipeline-stage-view \
+    credentials-binding
+
