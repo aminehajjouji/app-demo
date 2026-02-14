@@ -37,3 +37,5 @@ RUN jenkins-plugin-cli --plugins \
     pipeline-stage-view \
     credentials-binding
 
+# Skip initial setup
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
